@@ -18,7 +18,7 @@ RUN apt-get update  \
 && rm baidunetdisk_4.3.0_arm64.deb \
 # XDAMAGE is not working well. -noxdamage
 &&  sed -i 's@usr\/bin\/x11vnc  \\@usr\/bin\/x11vnc  \\\n                    -noxdamage \\@'   /etc/services.d/x11vnc/run   \
-&&  install_app_icon.sh https://raw.githubusercontent.com/gshang2017/docker/master/baidunetdisk/icon/baidunetdisk.png  \
+&&  install_app_icon.sh https://github.com/thomaslty/baidunetdisk-docker/raw/master/icon/baidunetdisk.png  \
 # fix window decorations
 &&  sed -i 's@<decor>no<\/decor>@<decor>yes<\/decor>@g'  /etc/xdg/openbox/rc.xml  \
 # fix dpkg
