@@ -24,10 +24,17 @@ jobs:
           # a GitHub package registry.
           githubToken: ${{ github.token }}
           
-          #env
+          # env
           env: |
             DOCKER_USER: ${{secrets.DOCKER_USER}}
             DOCKER_PW: ${{secrets.DOCKER_PW}}
+            
+          # install dependency
+          install: |
+            apt-get update -q -y
+            apt-get install -q -y git wget curl
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sh get-docker.sh
 
           # Set an output parameter `uname` for use in subsequent steps
           run: |
