@@ -1,43 +1,42 @@
-name: Docker Image CI
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-jobs:
-  aarch64_job:
-    # The host should always be Linux
+name: Docker Build/Publish Image 
+on:  
+  push:    
+    branches: [ master ]  
+jobs:   
+  build:    
     runs-on: ubuntu-18.04
-    name: Build on ubuntu-18.04 aarch64
-    steps:
-      - uses: actions/checkout@v2.1.0    
-      - uses: uraimo/run-on-arch-action@v2.1.1
-        name: Run commands
-        id: runcmd
-        with:
-          arch: aarch64
-          distro: ubuntu18.04
-
-          # Not required, but speeds up builds by storing container images in
-          # a GitHub package registry.
-          githubToken: ${{ github.token }}
-          
-          # env
-          env: |
-            DOCKER_USER: ${{secrets.DOCKER_USER}}
-            DOCKER_PW: ${{secrets.DOCKER_PW}}
-            
-          # install dependency
-          install: |
-            apt-get update -q -y
-            apt-get install -q -y git wget curl apt-utils
-            curl -fsSL https://get.docker.com -o get-docker.sh
-            sh get-docker.sh
-
-          # Set an output parameter `uname` for use in subsequent steps
-          run: |
-            docker login -u ${DOCKER_USER} -p ${DOCKER_PW}
-            docker build . --file Dockerfile --tag thomaslty16/baidunetdisk-docker:$(date +%s)
-            docker push thomaslty16/baidunetdisk-docker
+    env:
+      DOCKER_REGISTRY: docker.io
+      DOCKER_IMAGE: thomaslty16/baidunetdisk-docker
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PW }}
+      DOCKER_TARGET_PLATFORM: linux/arm64
+    steps:    
+    - name: Checkout the code       
+      uses: actions/checkout@v2.1.0  
+      
+    # https://github.com/docker/setup-qemu-action
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1.2.0
+      
+    # https://github.com/docker/setup-buildx-action
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1.6.0
+      
+    - name: Prepare      
+      if: success()      
+      id: prepare      
+      run: |        
+        echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}        
+        echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}        
+        echo ::set-output name=version::${GITHUB_RUN_NUMBER}   
+        
+    - name: Docker Login      
+      if: success()      
+      run: |        
+        echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin  
+        
+    - name: Run Buildx (push image)      
+      if: success()      
+      run: |        
+        docker buildx build \        --platform ${{ steps.prepare.outputs.docker_platform }} \        --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \        --file ./Dockerfile \        --output type=image,push=true .
