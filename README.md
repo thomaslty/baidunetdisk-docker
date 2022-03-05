@@ -1,6 +1,6 @@
 ## For arm64 devices, like raspberry pi 4：
 
-### Thank to:
+### Thanks to:
 
 [https://hub.docker.com/r/eecs388/baseimage-gui](https://hub.docker.com/r/eecs388/baseimage-gui "https://hub.docker.com/r/eecs388/baseimage-gui")                                       
 
