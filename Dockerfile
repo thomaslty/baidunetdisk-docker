@@ -1,5 +1,3 @@
-#FROM jlesage/baseimage-gui:debian-10
-#FROM beeh1ve/baseimage-gui:debian-10.aarch64
 FROM eecs388/baseimage-gui:debian-10
 
 ARG  BAIDUNETDISK_VER=4.3.0
