@@ -1,0 +1,15 @@
+version: "2.1"
+services:
+  baidunetdisk:
+    image: thomaslty16/baidunetdisk-docker:latest
+    container_name: baidunetdisk
+    environment:
+      - USER_ID=1000
+      - GROUP_ID=1000 
+    volumes:
+      - ./config:/config
+      - ./downloads:/config/baidunetdiskdownload
+    ports:
+      - 5900:5900
+      - 5800:5800
+    restart: unless-stopped
