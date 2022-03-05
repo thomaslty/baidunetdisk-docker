@@ -32,12 +32,12 @@ jobs:
           # install dependency
           install: |
             apt-get update -q -y
-            apt-get install -q -y git wget curl
+            apt-get install -q -y git wget curl apt-utils
             curl -fsSL https://get.docker.com -o get-docker.sh
             sh get-docker.sh
 
           # Set an output parameter `uname` for use in subsequent steps
           run: |
-            docker login -u $DOCKER_USER -p $DOCKER_PW
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PW}
             docker build . --file Dockerfile --tag thomaslty16/baidunetdisk-docker:$(date +%s)
             docker push thomaslty16/baidunetdisk-docker
