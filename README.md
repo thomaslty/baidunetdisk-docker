@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
 ```
 
-### 变量:
+### configs:
 
 |param|details|
 |:-|:-|
